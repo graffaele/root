@@ -103,17 +103,21 @@ if(XROOTD_FOUND)
   else()
 
     # libXrdMain (dropped in versions >= 4)
-    find_library(XROOTD_XrdMain_LIBRARY
-       NAMES XrdMain
-       HINTS ${searchpath}
-       PATH_SUFFIXES lib)
-    if (XROOTD_XrdMain_LIBRARY)
-       list(APPEND XROOTD_LIBRARIES ${XROOTD_XrdMain_LIBRARY})
+    if(${xrdversnum} LESS 40000000)
+       find_library(XROOTD_XrdMain_LIBRARY
+          NAMES XrdMain
+          HINTS ${searchpath}
+          PATH_SUFFIXES lib)
+       if (XROOTD_XrdMain_LIBRARY)
+          list(APPEND XROOTD_LIBRARIES ${XROOTD_XrdMain_LIBRARY})
+       else ()
+          set(XROOTD_NOMAIN TRUE)
+          if(NOT XROOTD_FIND_QUIETLY)
+             message(STATUS "             libXrdMain not found: xproofd will be a wrapper around xrootd")
+          endif ()
+       endif ()
     else ()
        set(XROOTD_NOMAIN TRUE)
-       if(NOT XROOTD_FIND_QUIETLY)
-          message(STATUS "             libXrdMain not found: xproofd will be a wrapper around xrootd")
-       endif ()
     endif ()
 
     # libXrdUtils
